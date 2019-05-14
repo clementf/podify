@@ -1,0 +1,13 @@
+name: podify
+version: 0.1.0
+
+authors:
+  - Clement Ferey <clement.ferey@gmail.com>
+
+targets:
+  podify:
+    main: src/podify.cr
+
+crystal: 0.27.0
+
+license: MIT
