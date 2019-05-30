@@ -3,6 +3,7 @@ require "cossack"
 require "./playlist"
 require "./track"
 require "./search"
+require "./user"
 require "./oauth"
 
 module Spotify
@@ -16,15 +17,25 @@ module Spotify
 
     @@access_token : String?
     @@client : Cossack::Client?
+    @@user_id : String?
 
     def initialize
     end
 
     def self.get(url)
-      c = client
-      return "" if c.nil?
-      response = c.get(url)
+      response = client.not_nil!.get(url)
       process_response(response)
+    end
+
+    def self.post(url, params)
+      response = client.not_nil!.post(url, params)
+      process_response(response)
+    end
+
+    def self.user_id
+      @@user_id ||= Spotify::User.from_json(
+        process_response(client.get("/me"))
+      ).id
     end
 
     def self.client
@@ -35,6 +46,8 @@ module Spotify
       case response.status
       when 200..299
         return response.body
+      when 400
+        raise ServerError.new("400: #{response.body}")
       when 404
         return ""
       when 429

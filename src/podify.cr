@@ -31,7 +31,9 @@ module Podify
 
   episodes.last.tracks.size.times { spotify_tracks << channel.receive }
 
-  spotify_tracks.each do |spotify_track|
-    puts "Found #{spotify_track.link}" unless spotify_track.nil?
+  playlist = Spotify::Playlist.find_podify_playlist
+
+  track = spotify_tracks.compact.each do |track|
+    playlist.add(track) unless (playlist.nil? || track.nil?)
   end
 end

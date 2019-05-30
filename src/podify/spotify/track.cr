@@ -7,7 +7,11 @@ module Spotify
     include JSON::Serializable
 
     getter id : String
+    getter uri : String
     getter external_urls : ExternalUrl
+
+    @[JSON::Field(key: "name")]
+    getter title : String
 
     def self.find(track : ::Track)
       query = URI.escape("track:#{track.title} artist:#{track.artist}")

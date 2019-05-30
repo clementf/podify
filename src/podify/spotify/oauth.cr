@@ -30,7 +30,7 @@ module Spotify
                                          token_uri: "/api/token",
                                          redirect_uri: REDIRECT)
 
-      authorize_uri = oauth2_client.get_authorize_uri(scope: "playlist-modify-private")
+      authorize_uri = oauth2_client.get_authorize_uri(scope: "playlist-modify-public playlist-modify-private")
 
       # Ephemeral http server to handle oauth callback
       @temp_server = HTTP::Server.new do |context|
