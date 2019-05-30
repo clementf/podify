@@ -3,6 +3,7 @@ require "cossack"
 require "./playlist"
 require "./track"
 require "./search"
+require "./oauth"
 
 module Spotify
   class ServerError < Exception; end
@@ -11,7 +12,7 @@ module Spotify
     CLIENT_ID = ENV.fetch("SPOTIFY_CLIENT_ID")
     CLIENT_SECRET = ENV.fetch("SPOTIFY_CLIENT_SECRET")
     AUTH_URL = "https://accounts.spotify.com"
-    API_URL = "https://api.spotify.com/v1/"
+    API_URL = "https://api.spotify.com/v1"
 
     @@access_token : String?
     @@client : Cossack::Client?
@@ -27,7 +28,7 @@ module Spotify
     end
 
     def self.client
-      @@client ||= configure_client
+      @@client ||= Spotify::OAuth.new.authenticate_client(cossack_client)
     end
 
     private def self.process_response(response : Cossack::Response | HTTP::Client::Response)
@@ -45,32 +46,11 @@ module Spotify
       end
     end
 
-    private def self.configure_client
-      authenticate
-
+    private def self.cossack_client
       Cossack::Client.new(Spotify::Api::API_URL) do |client|
-        client.headers["Authorization"] = "Bearer #{@@access_token}"
         client.use Cossack::RedirectionMiddleware, limit: 10
         client.use(StdoutLogMiddleware)
       end
-    end
-
-    private def self.authenticate
-      auth_client = Cossack::Client.new(Spotify::Api::AUTH_URL) do |client|
-        client.headers["Authorization"] = "Basic #{encoded_credentials}"
-        client.headers["Content-Type"] = "application/x-www-form-urlencoded"
-        client.use(Cossack::RedirectionMiddleware, limit: 10)
-        client.use(StdoutLogMiddleware)
-      end
-
-      response = auth_client.post("/api/token", "grant_type=client_credentials")
-      body = JSON.parse(response.body)
-      @@access_token = body["access_token"].to_s
-    end
-
-    private def self.encoded_credentials
-      creds = "#{Spotify::Api::CLIENT_ID}:#{Spotify::Api::CLIENT_SECRET}"
-      encoded_credentials = Base64.strict_encode(creds)
     end
   end
 
