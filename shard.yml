@@ -4,6 +4,13 @@ version: 0.1.0
 authors:
   - Clement Ferey <clement.ferey@gmail.com>
 
+dependencies:
+  dotenv:
+    github: drum445/dotenv
+  cossack:
+    github: crystal-community/cossack
+    version: ~> 0.1
+
 targets:
   podify:
     main: src/podify.cr
