@@ -15,6 +15,7 @@ module ListenNotesApi
       @http_client = Cossack::Client.new(ListenNotesApi::BASE_URL) do |client|
         client.headers["X-ListenAPI-Key"] = API_TOKEN
         client.use Cossack::RedirectionMiddleware, limit: 10
+        client.use(StdoutLogMiddleware)
       end
     end
 
@@ -22,6 +23,13 @@ module ListenNotesApi
       response = @http_client.get("/podcasts/#{feed_id}")
       body = process_response(response)
       Podcast.from_json(body).episodes
+    end
+  end
+
+  class StdoutLogMiddleware < Cossack::Middleware
+    def call(request)
+      puts "#{request.method} #{request.uri}"
+      app.call(request)
     end
   end
 end

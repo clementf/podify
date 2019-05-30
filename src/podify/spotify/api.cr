@@ -51,6 +51,7 @@ module Spotify
       Cossack::Client.new(Spotify::Api::API_URL) do |client|
         client.headers["Authorization"] = "Bearer #{@@access_token}"
         client.use Cossack::RedirectionMiddleware, limit: 10
+        client.use(StdoutLogMiddleware)
       end
     end
 
@@ -59,6 +60,7 @@ module Spotify
         client.headers["Authorization"] = "Basic #{encoded_credentials}"
         client.headers["Content-Type"] = "application/x-www-form-urlencoded"
         client.use(Cossack::RedirectionMiddleware, limit: 10)
+        client.use(StdoutLogMiddleware)
       end
 
       response = auth_client.post("/api/token", "grant_type=client_credentials")
@@ -69,6 +71,13 @@ module Spotify
     private def self.encoded_credentials
       creds = "#{Spotify::Api::CLIENT_ID}:#{Spotify::Api::CLIENT_SECRET}"
       encoded_credentials = Base64.strict_encode(creds)
+    end
+  end
+
+  class StdoutLogMiddleware < Cossack::Middleware
+    def call(request)
+      puts "#{request.method} #{request.uri}"
+      app.call(request)
     end
   end
 end
