@@ -3,6 +3,7 @@ Dotenv.load
 
 require "./podify/podcast_feed"
 require "./podify/spotify/track"
+require "./podify/spotify/api"
 require "./podify/data_source/listen_notes_api/client"
 require "./podify/podcast_feed"
 
@@ -12,24 +13,25 @@ module Podify
 
   feed_id = "a8de99afbb724950ab9107d739bad7be"
   data_source = ListenNotesApi::Client.new
+  episodes = PodcastFeed.new(feed_id, data_source).episodes
 
-  feed = PodcastFeed.new(feed_id, data_source)
+  # call client to authenticate before spawning a fiber for each track
+  Spotify::Api.client
 
-  # feed.episodes.each do |episode|
+  channel        = Channel(Spotify::Track | Nil).new
+  spotify_tracks = [] of Spotify::Track | Nil
 
-  track = feed.episodes.last.tracks[2]
-  feed.episodes.last.tracks.each do |track|
+  episodes.last.tracks.each do |track|
+    spawn do
       spotify_track = Spotify::Track.find(track)
 
-      next if spotify_track.nil?
-
-      puts "Found #{spotify_track.link}"
-
-      # command = "open #{spotify_track.link}"
-      # Process.run(command, shell: true)
-
-      # playlist = spotify.create_playlist(episode.title)
-      # playlist.add(spotify_track)
+      channel.send(spotify_track)
     end
-  # end
+  end
+
+  episodes.last.tracks.size.times { spotify_tracks << channel.receive }
+
+  spotify_tracks.each do |spotify_track|
+    puts "Found #{spotify_track.link}" unless spotify_track.nil?
+  end
 end
