@@ -10,10 +10,10 @@ module Spotify
   class ServerError < Exception; end
 
   class Api
-    CLIENT_ID = ENV.fetch("SPOTIFY_CLIENT_ID")
+    CLIENT_ID     = ENV.fetch("SPOTIFY_CLIENT_ID")
     CLIENT_SECRET = ENV.fetch("SPOTIFY_CLIENT_SECRET")
-    AUTH_URL = "https://accounts.spotify.com"
-    API_URL = "https://api.spotify.com/v1"
+    AUTH_URL      = "https://accounts.spotify.com"
+    API_URL       = "https://api.spotify.com/v1"
 
     @@access_token : String?
     @@client : Cossack::Client?

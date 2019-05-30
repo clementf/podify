@@ -4,9 +4,8 @@ require "./podcast"
 require "../data_source"
 
 module ListenNotesApi
-
   API_TOKEN = ENV.fetch("LISTEN_NOTES_API_TOKEN")
-  BASE_URL = "https://listen-api.listennotes.com/api/v2"
+  BASE_URL  = "https://listen-api.listennotes.com/api/v2"
 
   class Client
     include DataSource
@@ -33,4 +32,3 @@ module ListenNotesApi
     end
   end
 end
-

@@ -8,6 +8,5 @@ module Spotify
 
     @[JSON::Field(key: "display_name")]
     getter name : String
-
   end
 end

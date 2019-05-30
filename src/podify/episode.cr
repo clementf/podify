@@ -1,7 +1,6 @@
 require "./track"
 
 class Episode
-
   def name
     ""
   end

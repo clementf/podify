@@ -10,7 +10,6 @@ require "./podify/podcast_feed"
 module Podify
   VERSION = "0.1.0"
 
-
   feed_id = "a8de99afbb724950ab9107d739bad7be"
   data_source = ListenNotesApi::Client.new
   episodes = PodcastFeed.new(feed_id, data_source).episodes
@@ -18,7 +17,7 @@ module Podify
   # call client to authenticate before spawning a fiber for each track
   Spotify::Api.client
 
-  channel        = Channel(Spotify::Track | Nil).new
+  channel = Channel(Spotify::Track | Nil).new
   spotify_tracks = [] of Spotify::Track | Nil
 
   episodes.last.tracks.each do |track|

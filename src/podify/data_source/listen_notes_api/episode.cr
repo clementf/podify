@@ -3,10 +3,10 @@ require "json"
 module ListenNotesApi
   class Episode
     JSON.mapping({
-      audio: String,
+      audio:            String,
       audio_length_sec: UInt16, # don't expect episodes with negative duration, or longer than ~18 hours
-      description: String,
-      title: String,
+      description:      String,
+      title:            String,
     })
 
     def tracks
@@ -26,11 +26,10 @@ module ListenNotesApi
 
         artist = match_data[2].strip
         title = match_data[4].strip
-        version =  match_data[5].strip
+        version = match_data[5].strip
         label = match_data[7].strip
         Track.new(title, artist, version, label)
       end.compact
     end
   end
-
 end

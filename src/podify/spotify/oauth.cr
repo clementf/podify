@@ -6,9 +6,8 @@ require "./api"
 
 module Spotify
   class OAuth
-
-    TEMP_SERVER_PORT = 4567
-    REDIRECT = "http://127.0.0.1:#{TEMP_SERVER_PORT}"
+    TEMP_SERVER_PORT      = 4567
+    REDIRECT              = "http://127.0.0.1:#{TEMP_SERVER_PORT}"
     SPOTIFY_CALLBACK_PATH = "/"
 
     @access_token : OAuth2::AccessToken?
@@ -25,16 +24,15 @@ module Spotify
 
     private def set_tokens
       oauth2_client = OAuth2::Client.new("#{URI.parse(Spotify::Api::AUTH_URL).host}",
-                                         Spotify::Api::CLIENT_ID, Spotify::Api::CLIENT_SECRET,
-                                         authorize_uri: "/authorize",
-                                         token_uri: "/api/token",
-                                         redirect_uri: REDIRECT)
+        Spotify::Api::CLIENT_ID, Spotify::Api::CLIENT_SECRET,
+        authorize_uri: "/authorize",
+        token_uri: "/api/token",
+        redirect_uri: REDIRECT)
 
       authorize_uri = oauth2_client.get_authorize_uri(scope: "playlist-modify-public playlist-modify-private")
 
       # Ephemeral http server to handle oauth callback
       @temp_server = HTTP::Server.new do |context|
-
         # By default, Spotify would also request /favico, so only valid call is this one
         if context.request.path == SPOTIFY_CALLBACK_PATH
           context.response.content_type = "text/plain"

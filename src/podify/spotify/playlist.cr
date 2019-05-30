@@ -7,7 +7,6 @@ module Spotify
 
     @[JSON::Field(key: "items")]
     getter playlists : Array(Spotify::Playlist)
-
   end
 
   class Playlist
