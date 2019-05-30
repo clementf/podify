@@ -24,11 +24,11 @@ module ListenNotesApi
         match_data = line.match(regex)
         next unless match_data
 
-        name = match_data[2].strip
-        artist = match_data[4].strip
+        artist = match_data[2].strip
+        title = match_data[4].strip
         version =  match_data[5].strip
         label = match_data[7].strip
-        Track.new(name, artist, version, label)
+        Track.new(title, artist, version, label)
       end.compact
     end
   end

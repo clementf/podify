@@ -1,9 +1,11 @@
 class Track
-  def initialize(@name : String, @artist : String, @version : String?, @label : String?)
+  getter :title, :artist, :version, :label
+
+  def initialize(@title : String, @artist : String, @version : String?, @label : String?)
 
   end
 
   def to_s(io)
-    io << "#{@artist} - #{@name}"
+    io << "#{@artist} - #{@title} (#{@version}) [#{@label}]"
   end
 end
