@@ -2,17 +2,22 @@
 
 Podify connects to data sources (For now [Listen Notes API](https://listennotes.com/api/)), extracts metadata from podcast feeds and adds tracks it finds to a Spotify playlist.
 
+## Prerequisites
+Have [Crystal](https://crystal-lang.org) installed.
+On mac: `brew install crystal`
+
 ## Installation
 
-TODO: Write installation instructions here
+`shards`
 
 ## Usage
 
-TODO: Write usage instructions here
+`crystal run src/podify.cr`
 
-## Development
-
-TODO: Write development instructions here
+## Todo
+- CLI: 
+    - configurable podcast feed (should be a listen notes id)
+- Don't add track if already in playlist
 
 ## Contributing
 
