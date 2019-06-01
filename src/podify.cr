@@ -7,32 +7,37 @@ require "./podify/spotify/api"
 require "./podify/data_source/listen_notes_api/client"
 require "./podify/podcast_feed"
 
+require "./podify/cli/cli"
+
 module Podify
   VERSION = "0.1.0"
 
-  feed_id = "a8de99afbb724950ab9107d739bad7be"
-  data_source = ListenNotesApi::Client.new
-  episodes = PodcastFeed.new(feed_id, data_source).episodes
+  Cli.run
 
-  # call client to authenticate before spawning a fiber for each track
-  Spotify::Api.client
+  def self.start(feed_id)
+    data_source = ListenNotesApi::Client.new
+    episodes = PodcastFeed.new(feed_id, data_source).episodes
 
-  channel = Channel(Spotify::Track | Nil).new
-  spotify_tracks = [] of Spotify::Track | Nil
+    # call client to authenticate before spawning a fiber for each track
+    Spotify::Api.client
 
-  episodes.last.tracks.each do |track|
-    spawn do
-      spotify_track = Spotify::Track.find(track)
+    channel = Channel(Spotify::Track | Nil).new
+    spotify_tracks = [] of Spotify::Track | Nil
 
-      channel.send(spotify_track)
+    episodes.last.tracks.each do |track|
+      spawn do
+        spotify_track = Spotify::Track.find(track)
+
+        channel.send(spotify_track)
+      end
     end
-  end
 
-  episodes.last.tracks.size.times { spotify_tracks << channel.receive }
+    episodes.last.tracks.size.times { spotify_tracks << channel.receive }
 
-  playlist = Spotify::Playlist.find_podify_playlist
+    playlist = Spotify::Playlist.find_podify_playlist
 
-  track = spotify_tracks.compact.each do |track|
-    playlist.add(track) unless (playlist.nil? || track.nil?)
+    track = spotify_tracks.compact.each do |track|
+      playlist.add(track) unless (playlist.nil? || track.nil?)
+    end
   end
 end
