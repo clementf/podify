@@ -12,12 +12,14 @@ On mac: `brew install crystal`
 
 ## Usage
 
-`crystal run src/podify.cr`
+Compile with: `crystal build src/podify.cr`
+
+Run with `./podify -f listen_notes_feed_id`
+
+Get help and available options with `./podify -h`
 
 ## Todo
-- CLI: 
-    - configurable podcast feed (should be a listen notes id)
-- Don't add track if already in playlist
+- Propper logging
 
 ## Contributing
 
