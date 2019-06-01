@@ -38,50 +38,49 @@ module ListenNotesApi
       ]
     end
 
-  end
+    # Will match a full track description, as the following
+    # 20. Burn In Noise - Psychedelic Playground (Original Mix) [Label Name]
+    class StrictMatcher
+      def initialize(@data : String); end
 
-  # Will match a full track description, as the following
-  # 20. Burn In Noise - Psychedelic Playground (Original Mix) [Label Name]
-  class StrictMatcher
-    def initialize(@data : String); end
+      def regex
+        /[0-9]{1,4}(\.|\))(.*)(\s-\s)(.*)?\s\((.*)\)(\s\[(.*)\])?/
+      end
 
-    def regex
-      /[0-9]{1,4}(\.|\))(.*)(\s-\s)(.*)?\s\((.*)\)(\s\[(.*)\])?/
+      def extract_track
+        match = @data.match(regex)
+
+        return unless match
+
+        artist = match[2].strip
+        title = match[4].strip
+        version = match[5].strip
+        label = match[7].strip
+        Track.new(title, artist, version, label)
+      end
     end
 
-    def extract_track
-      match = @data.match(regex)
+    # Will match everything as long as it starts with track number and contains artist and track name separated with a dash
+    # So, it will match:
+    # 20. Burn In Noise - Psychedelic Playground
+    # As well as
+    # 20. Burn In Noise - Psychedelic Playground (Original Mix) [Label Name]
+    class GenericMatcher
+      def initialize(@data : String); end
 
-      return unless match
+      def regex
+        /([0-9]{1,4}\.|\)) (.*)? - (.*)?/
+      end
 
-      artist = match[2].strip
-      title = match[4].strip
-      version = match[5].strip
-      label = match[7].strip
-      Track.new(title, artist, version, label)
-    end
-  end
+      def extract_track
+        match = @data.match(regex)
 
-  # Will match everything as long as it starts with track number and contains artist and track name separated with a dash
-  # So, it will match:
-  # 20. Burn In Noise - Psychedelic Playground
-  # As well as
-  # 20. Burn In Noise - Psychedelic Playground (Original Mix) [Label Name]
-  class GenericMatcher
-    def initialize(@data : String); end
+        return unless match
 
-    def regex
-      /([0-9]{1,4}\.|\)) (.*)? - (.*)?/
-    end
-
-    def extract_track
-      match = @data.match(regex)
-
-      return unless match
-
-      artist = match[2].strip
-      title = match[3].strip
-      Track.new(title, artist, nil, nil)
+        artist = match[2].strip
+        title = match[3].strip
+        Track.new(title, artist, nil, nil)
+      end
     end
   end
 end
