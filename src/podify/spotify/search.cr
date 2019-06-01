@@ -15,5 +15,6 @@ module Spotify
 
     @[JSON::Field(key: "items")]
     getter tracks : Array(Spotify::Track)
+
   end
 end

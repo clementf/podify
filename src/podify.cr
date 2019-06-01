@@ -3,6 +3,7 @@ Dotenv.load
 
 require "./podify/podcast_feed"
 require "./podify/spotify/track"
+require "./podify/spotify/tracks_from_playlist"
 require "./podify/spotify/api"
 require "./podify/data_source/listen_notes_api/client"
 require "./podify/podcast_feed"
@@ -36,8 +37,15 @@ module Podify
 
     playlist = Spotify::Playlist.find_podify_playlist
 
+    return unless playlist
+
+    tracks_in_playlist = Spotify::Tracks.new(playlist.id)
+
     track = spotify_tracks.compact.each do |track|
-      playlist.add(track) unless (playlist.nil? || track.nil?)
+      return unless track
+      return if tracks_in_playlist.to_a.any? { |t| track.id == t.id }
+
+      playlist.add(track)
     end
   end
 end
