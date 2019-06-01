@@ -19,17 +19,69 @@ module ListenNotesApi
 
     def extract_tracks
       lines = @text.split("\n")
-      regex = /[0-9]{1,4}(\.|\))(.*)(\s-\s)(.*)?\s\((.*)\)(\s\[(.*)\])?/
       lines.map do |line|
-        match_data = line.match(regex)
-        next unless match_data
+        track = nil
 
-        artist = match_data[2].strip
-        title = match_data[4].strip
-        version = match_data[5].strip
-        label = match_data[7].strip
-        Track.new(title, artist, version, label)
+        matchers.each do |matcher|
+          track = matcher.new(line).extract_track
+          break if track
+        end
+
+        track
       end.compact
+    end
+
+    private def matchers
+      [
+        StrictMatcher,
+        GenericMatcher
+      ]
+    end
+
+  end
+
+  # Will match a full track description, as the following
+  # 20. Burn In Noise - Psychedelic Playground (Original Mix) [Label Name]
+  class StrictMatcher
+    def initialize(@data : String); end
+
+    def regex
+      /[0-9]{1,4}(\.|\))(.*)(\s-\s)(.*)?\s\((.*)\)(\s\[(.*)\])?/
+    end
+
+    def extract_track
+      match = @data.match(regex)
+
+      return unless match
+
+      artist = match[2].strip
+      title = match[4].strip
+      version = match[5].strip
+      label = match[7].strip
+      Track.new(title, artist, version, label)
+    end
+  end
+
+  # Will match everything as long as it starts with track number and contains artist and track name separated with a dash
+  # So, it will match:
+  # 20. Burn In Noise - Psychedelic Playground
+  # As well as
+  # 20. Burn In Noise - Psychedelic Playground (Original Mix) [Label Name]
+  class GenericMatcher
+    def initialize(@data : String); end
+
+    def regex
+      /([0-9]{1,4}\.|\)) (.*)? - (.*)?/
+    end
+
+    def extract_track
+      match = @data.match(regex)
+
+      return unless match
+
+      artist = match[2].strip
+      title = match[3].strip
+      Track.new(title, artist, nil, nil)
     end
   end
 end
