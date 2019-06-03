@@ -19,7 +19,7 @@ Run with `./podify -f listen_notes_feed_id`
 Get help and available options with `./podify -h`
 
 ## Todo
-- Propper logging
+
 
 ## Contributing
 

@@ -27,7 +27,7 @@ module ListenNotesApi
 
   class StdoutLogMiddleware < Cossack::Middleware
     def call(request)
-      puts "#{request.method} #{request.uri}"
+      Podify.logger.info("#{request.method} #{request.uri}")
       app.call(request)
     end
   end

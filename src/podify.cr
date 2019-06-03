@@ -1,6 +1,8 @@
 require "dotenv"
 Dotenv.load
 
+require "logger"
+
 require "./podify/podcast_feed"
 require "./podify/spotify/track"
 require "./podify/spotify/tracks_from_playlist"
@@ -24,7 +26,7 @@ module Podify
 
     episodes.each do |episode|
       loop do
-        puts "Do you want to add tracks for episode \"#{episode.title}\"? (y/n/q)"
+       puts "Do you want to add tracks for episode \"#{episode.title}\"? (y/n/q)"
 
         a = gets
 
@@ -67,5 +69,9 @@ module Podify
 
       playlist.add(track)
     end
+  end
+
+  def self.logger
+    @@logger ||= Logger.new(STDOUT, level: Logger::DEBUG)
   end
 end

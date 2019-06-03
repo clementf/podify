@@ -69,7 +69,7 @@ module Spotify
 
   class StdoutLogMiddleware < Cossack::Middleware
     def call(request)
-      puts "#{request.method} #{request.uri}"
+      Podify.logger.debug("#{request.method} #{request.uri}")
       app.call(request)
     end
   end
