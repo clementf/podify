@@ -22,10 +22,30 @@ module Podify
     # call client to authenticate before spawning a fiber for each track
     Spotify::Api.client
 
+    episodes.each do |episode|
+      loop do
+        puts "Do you want to add tracks for episode \"#{episode.title}\"? (y/n/q)"
+
+        a = gets
+
+        case a
+        when "y"
+          handle_episode(episode)
+          break
+        when "n"
+          break
+        when "q"
+          exit(1)
+        end
+      end
+    end
+  end
+
+  def self.handle_episode(episode)
     channel = Channel(Spotify::Track | Nil).new
     spotify_tracks = [] of Spotify::Track | Nil
 
-    episodes.last.tracks.each do |track|
+    episode.tracks.each do |track|
       spawn do
         spotify_track = Spotify::Track.find(track)
 
@@ -33,7 +53,7 @@ module Podify
       end
     end
 
-    episodes.last.tracks.size.times { spotify_tracks << channel.receive }
+    episode.tracks.size.times { spotify_tracks << channel.receive }
 
     playlist = Spotify::Playlist.find_podify_playlist
 
