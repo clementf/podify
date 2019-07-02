@@ -37,7 +37,7 @@ module Spotify
     end
 
     def add(track : Spotify::Track)
-      params = {"uris": [track.uri]}
+      params = {"uris": [track.uri], "position": 0}
 
       Podify.logger.info("Adding track #{track.title} to playlist #{name}")
       Spotify::Api.post("playlists/#{id}/tracks", params.to_json)
